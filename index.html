@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ModuHub - Master Your Modules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#002b4d',
+                            main: '#005088', 
+                            light: '#e6f0fa',
+                            accent: '#ea580c', 
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased smooth-scroll relative">
+
+    <nav class="bg-brand-main text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2 cursor-pointer" onclick="showView('home-view')">
+                        <i class="fa-solid fa-layer-group text-2xl text-brand-accent"></i>
+                        <span class="font-extrabold text-xl tracking-wide">ModuHub</span>
+                    </div>
+                    
+                    <div class="hidden md:flex items-center bg-brand-dark px-3 py-1.5 rounded-full text-xs border border-blue-800">
+                        <i class="fa-solid fa-location-dot text-brand-accent mr-2"></i>
+                        <select class="bg-transparent text-white font-medium outline-none cursor-pointer appearance-none pr-2">
+                            <option value="HUBU" class="text-black">Hubei University (HUBU)</option>
+                            <option value="WHU" class="text-black">Wuhan University (WHU)</option>
+                            <option value="HUST" class="text-black">Huazhong Univ. of Sci. & Tech. (HUST)</option>
+                            <option value="WUST" class="text-black">Wuhan Univ. of Sci. & Tech. (WUST)</option>
+                        </select>
+                        <i class="fa-solid fa-caret-down text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4 md:space-x-8 font-medium text-[10px] md:text-sm overflow-x-auto no-scrollbar">
+                    <a href="javascript:void(0)" id="nav-module" onclick="showView('module-hub-view')" class="text-brand-accent border-b-2 border-brand-accent pb-1 transition-all">Module Hub</a>
+                    <a href="javascript:void(0)" id="nav-market" onclick="showView('general-market-view')" class="text-gray-200 hover:text-white transition-all">General Market</a>
+    
+                    <a href="javascript:void(0)" id="nav-requests" onclick="showView('my-requests-view')" class="text-gray-200 hover:text-white transition-all hidden">My Requests</a>
+    
+                    <a href="javascript:void(0)" id="nav-all-requests" onclick="showView('all-requests-view')" class="text-gray-200 hover:text-white transition-all">All Requests</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- 购物车按钮 -->
+                    <button onclick="showCart()" class="relative bg-white text-brand-main p-2 rounded-full font-bold hover:bg-gray-100 transition shadow-md">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+                    <!-- 登录后显示Post按钮 -->
+                    <button class="bg-brand-accent text-white px-5 py-2 rounded-full font-bold hover:bg-orange-500 transition shadow-md" id="postBtn" style="display: none;">
+                        <i class="fa-solid fa-plus mr-1"></i> Post
+                    </button>
+                    <!-- 未登录显示SignIn按钮 -->
+                    <button id="signInBtn" onclick="toggleAuthModal('login')" class="bg-white text-brand-main px-5 py-2 rounded-full font-bold hover:bg-gray-100 transition shadow-md text-sm">
+                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Sign In
+                    </button>
+                    <!-- 登录后显示用户头像 -->
+                    <div id="userAvatar" onclick="openCurrentUserProfile()" class="cursor-pointer w-9 h-9 rounded-full bg-brand-light flex items-center justify-center text-brand-main font-bold border-2 border-white shadow-sm hover:ring-2 ring-brand-main transition" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="home-view" class="block">
+        <div class="bg-white border-b border-gray-200 py-24 relative overflow-hidden text-center">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-brand-dark mb-6">Master Your Modules</h1>
+            <p class="text-gray-500 mb-10 text-xl max-w-2xl mx-auto">Search course codes or names to unlock AI insights, senior reviews, and resources.</p>
+            <div class="flex items-center bg-white border-2 border-gray-200 rounded-full p-2 shadow-xl max-w-2xl mx-auto">
+                <input id="searchInput" type="text" placeholder="Try searching 'MATH101' or 'Advanced Mathematics'..." class="flex-grow py-3 px-6 text-gray-700 outline-none text-lg">
+                <button id="searchBtn" onclick="simulateSearch()" class="bg-brand-main text-white px-10 py-3 rounded-full font-bold">Search</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="module-hub-view" class="hidden bg-slate-50 pb-20">
+        <div class="bg-white border-b border-gray-200 sticky top-16 z-40">
+            <div class="max-w-6xl mx-auto px-4 py-4">
+                <div class="flex items-center bg-gray-50 border border-gray-300 rounded-full p-3 shadow-sm mb-4">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
+                    <input id="moduleSearchInput" type="text" placeholder="Search for other courses..." class="flex-grow bg-gray-50 outline-none text-gray-700 text-sm">
+                    <button id="moduleSearchBtn" onclick="searchModule()" class="bg-brand-main text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-brand-dark transition">Search</button>
+                </div>
+            </div>
+            <div class="max-w-6xl mx-auto px-4 flex space-x-8">
+                <!-- AI Insights 链接：新增id + 点击事件 -->
+                <a href="javascript:void(0)" id="ai-insights-tab" onclick="scrollToSection('ai-insights-section', 'ai-insights-tab')" class="py-4 text-brand-main font-bold border-b-4 border-brand-main"><i class="fa-solid fa-wand-magic-sparkles mr-2"></i>AI Insights</a>
+                <!-- Reviews 链接：新增id + 点击事件（跳转到Senior Insights） -->
+                <a href="javascript:void(0)" id="reviews-tab" onclick="scrollToSection('senior-insights-section', 'reviews-tab')" class="py-4 text-gray-500 hover:text-brand-main font-medium"><i class="fa-solid fa-comments mr-2"></i>Reviews</a>
+                <!-- Module Market 链接：新增id + 点击事件（跳转到Module Market） -->
+                <a href="javascript:void(0)" id="module-market-tab" onclick="scrollToSection('module-market-section', 'module-market-tab')" class="py-4 text-gray-500 hover:text-brand-main font-medium"><i class="fa-solid fa-store mr-2"></i>Module Market</a>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 mt-8">
+            <div id="no-results-message" class="hidden text-center py-12">
+                <i class="fa-solid fa-search text-6xl text-gray-300 mb-4"></i>
+                <h3 class="text-2xl font-bold text-gray-600 mb-2">No Relevant Results Found</h3>
+                <p class="text-gray-500">We are continuously updating our database with more courses. Please check back later!</p>
+            </div>
+            <div id="module-content" class="block">
+                <div id="ai-insights-section" class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                
+                <div class="ai-gradient p-6 rounded-2xl border border-blue-200 shadow-sm relative overflow-hidden">
+                    <i class="fa-solid fa-robot absolute -right-4 -bottom-4 text-7xl text-blue-500 opacity-10"></i>
+                    <div class="flex items-center text-blue-700 font-bold mb-4">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> AI Syllabus Synthesis: Advanced Mathematics
+                    </div>
+                    <h3 class="font-bold text-gray-800 mb-4 border-l-4 border-brand-main pl-3 relative z-10">Assessment Structure</h3>
+                    
+                    <div class="flex justify-between text-xs font-bold text-gray-600 mb-1 relative z-10"><span>Attendance & Homework</span> <span>30%</span></div>
+                    <div class="w-full bg-blue-100 h-2 rounded-full mb-4 relative z-10"><div class="bg-blue-500 h-2 rounded-full w-[30%]"></div></div>
+                    
+                    <div class="flex justify-between text-xs font-bold text-gray-600 mb-1 relative z-10"><span>Midterm Exam</span> <span>30%</span></div>
+                    <div class="w-full bg-blue-100 h-2 rounded-full mb-4 relative z-10"><div class="bg-purple-500 h-2 rounded-full w-[30%]"></div></div>
+
+                    <div class="flex justify-between text-xs font-bold text-gray-600 mb-1 relative z-10"><span>Final Exam</span> <span>40%</span></div>
+                    <div class="w-full bg-blue-100 h-2 rounded-full mb-4 relative z-10"><div class="bg-orange-500 h-2 rounded-full w-[40%]"></div></div>
+                </div>
+
+                <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+                    <h3 class="font-bold text-gray-800 mb-3 border-l-4 border-brand-main pl-3">Module Requirements</h3>
+                    <ul class="space-y-4 text-sm text-slate-700">
+                        <li class="flex items-start"><i class="fa-solid fa-book text-brand-main mr-2 mt-1"></i> <span><strong>High Difficulty:</strong> The professor frequently checks textbook notes during class.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-triangle-exclamation text-orange-600 mr-2 mt-1"></i> <span class="text-orange-600 font-bold">Strict Attendance: Random roll calls. -5 points from final grade for EACH late arrival.</span></li>
+                        <li class="flex items-start"><i class="fa-solid fa-pen-to-square text-brand-main mr-2 mt-1"></i> <span><strong>Exam Formatting:</strong> Must strictly follow the step-by-step proofs taught in class or lose marks.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="senior-insights-section" class="flex justify-between items-end mb-6 border-b border-gray-200 pb-2">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-gray-900 inline-block">Senior Insights</h2>
+                    <span class="text-sm font-medium text-gray-500 ml-3 bg-gray-100 px-2 py-1 rounded-lg">128 Reviews</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="text-xs text-gray-500 hidden md:inline-block"><i class="fa-solid fa-arrow-down-wide-short mr-1"></i>Sorted by: Top Likes</span>
+                    <span class="text-yellow-500 font-bold bg-yellow-50 px-3 py-1 rounded-lg"><i class="fa-solid fa-star"></i> 3.5/5 (Hard)</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition relative">
+                    <div class="absolute top-0 right-0 bg-red-50 text-red-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl rounded-tr-xl"><i class="fa-solid fa-fire mr-1"></i>HOT</div>
+                    <div class="flex justify-between items-start mb-4 mt-2">
+                        <div class="flex items-center cursor-pointer group" onclick="showUserProfile('Yang Xinyi', 'Y', 'Hubei University (HUBU)', 'Mathematics', 'Female', 'Year 2', '12', '0', '458')">
+                            <div class="w-11 h-11 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold mr-3 group-hover:ring-4 ring-purple-100 transition duration-300">Y</div>
+                            <div>
+                                <span class="font-bold text-gray-900 group-hover:text-brand-main transition">Yang Xinyi</span>
+                                <p class="text-xs text-gray-400">Year 2 · Took in 2025</p>
+                            </div>
+                        </div>
+                        <button onclick="handleLike(this)" class="text-gray-400 hover:text-brand-accent transition flex items-center space-x-1 mt-1">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                            <span class="font-bold text-sm">245</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700 text-sm italic leading-relaxed">"Calculus is a nightmare if you skip classes! The professor REALLY deducts 5 points if you are late. Buying a secondhand textbook with previous notes highlighted saved my life."</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center cursor-pointer group" onclick="showUserProfile('Hu Jiatao', 'H', 'Hubei University (HUBU)', 'Mathematics', 'Male', 'Year 2', '8', '0', '210')">
+                            <div class="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold mr-3 group-hover:ring-4 ring-green-100 transition duration-300">H</div>
+                            <div>
+                                <span class="font-bold text-gray-900 group-hover:text-brand-main transition">Hu Jiatao</span>
+                                <p class="text-xs text-gray-400">Year 2 · Took in 2025</p>
+                            </div>
+                        </div>
+                        <button onclick="handleLike(this)" class="text-gray-400 hover:text-brand-accent transition flex items-center space-x-1 mt-1">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                            <span class="font-bold text-sm">189</span>
+                        </button>
+                    </div>
+                    <p class="text-gray-700 text-sm italic leading-relaxed">"Pay attention to the proof formats. If you skip steps in the exam, you get zero points even if the final answer is right. Highly recommend grabbing the study guide here."</p>
+                </div>
+            </div>
+
+            <h2 id="module-market-section" class="text-2xl font-extrabold text-gray-900 mb-6 flex justify-between items-center">Module Market 
+                <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded">100% Course Match</span>
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover-lift">
+                    <img src="https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=400" class="w-full h-40 object-cover" alt="Textbook">
+                    <div class="p-4">
+                        <h4 class="font-bold text-sm">Advanced Mathematics 7th Edition</h4>
+                        <p class="text-xs text-gray-400 mt-1">Includes my personal class notes and highlighted formulas.</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-brand-accent font-black text-lg">$15</span>
+                            <button onclick="alert('Campus meet-up recommended for safety!')" class="bg-brand-main text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-brand-dark transition">Contact</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover-lift">
+                    <img src="https://images.unsplash.com/photo-1587145820266-a5951ee6f620?q=80&w=400" class="w-full h-40 object-cover" alt="Calculator">
+                    <div class="p-4">
+                        <h4 class="font-bold text-sm">Scientific Calculator (FX-991EX)</h4>
+                        <p class="text-xs text-gray-400 mt-1">Approved model for midterm and final exams. Condition: 9/10.</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-brand-accent font-black text-lg">$20</span>
+                            <button onclick="alert('Campus meet-up recommended for safety!')" class="bg-brand-main text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-brand-dark transition">Contact</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-blue-50 rounded-2xl border border-blue-100 overflow-hidden shadow-sm relative hover-lift">
+                    <span class="absolute top-0 right-0 bg-yellow-400 text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase shadow-sm">Digital Resource</span>
+                    <div class="h-40 flex flex-col items-center justify-center text-blue-300">
+                        <i class="fa-solid fa-file-pdf text-5xl mb-2"></i>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-sm">Step-by-Step Proofs Guide</h4>
+                        <p class="text-xs text-gray-400 mt-1">My summary of strict exam formats. I got an A+ using this.</p>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-brand-accent font-black text-lg">FREE</span>
+                            <button onclick="alert('Downloading PDF...')" class="bg-blue-100 text-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-200 transition">Download</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="general-market-view" class="hidden bg-slate-50 min-h-screen pb-20">
+        <div class="bg-brand-main text-white py-12 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h1 class="text-3xl font-extrabold mb-2">General Market</h1>
+                <p class="opacity-80">Browse secondhand items posted by students across campus</p>
+            </div>
+        </div>
+
+        <!-- 搜索框 -->
+        <div class="bg-white border-b border-gray-200 py-6 px-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center bg-gray-50 border border-gray-300 rounded-full p-3 shadow-sm">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
+                    <input 
+                        id="marketSearchInput" 
+                        type="text" 
+                        placeholder="Search for items (e.g., iPad, textbook, laptop...)" 
+                        class="flex-grow bg-gray-50 outline-none text-gray-700 text-sm"
+                        onkeyup="filterMarketItems()"
+                    >
+                    <button onclick="filterMarketItems()" class="ml-2 text-gray-500 hover:text-brand-main transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 mt-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="iPad Air" data-image="images/1.png" data-title="iPad Air (Near New, 10.9\")" data-price="420" data-seller="Zhang" data-date="3h ago" data-description="High-quality iPad Air in near new condition with minimal signs of use. Includes original box and charger. Perfect for students or professionals.">
+                <img src="images/1.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">iPad Air (Near New, 10.9")</h4>
+                    <p class="text-brand-accent font-black mt-2">$420</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Zhang · 3h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Introduction to Algorithms textbook" data-image="images/2.png" data-title="Introduction to Algorithms (CLRS)" data-price="35" data-seller="Li" data-date="Today" data-description="Classic computer science textbook by Cormen, Leiserson, Rivest, and Stein. Essential reading for algorithms and data structures. Well-maintained copy with notes inside.">
+                <img src="images/2.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Introduction to Algorithms (CLRS)</h4>
+                    <p class="text-brand-accent font-black mt-2">$35</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Li · Today</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Logitech MX Master Mouse" data-image="images/3.png" data-title="Logitech MX Master 3 Mouse" data-price="65" data-seller="Wang" data-date="1h ago" data-description="Professional-grade wireless mouse with customizable buttons and advanced tracking. Perfect for productivity and design work. Used in excellent condition.">
+                <img src="images/3.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Logitech MX Master 3 Mouse</h4>
+                    <p class="text-brand-accent font-black mt-2">$65</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Wang · 1h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="IKEA Desk Lamp" data-image="images/4.png" data-title="IKEA Desk Lamp (Warm White)" data-price="15" data-seller="Liu" data-date="Yesterday" data-description="Warm white desk lamp from IKEA. Energy-efficient LED bulb with adjustable brightness. Great for studying or working at night. Lightly used, excellent condition.">
+                <img src="images/4.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">IKEA Desk Lamp (Warm White)</h4>
+                    <p class="text-brand-accent font-black mt-2">$15</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Liu · Yesterday</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Mechanical Keyboard" data-image="images/5.png" data-title="Mechanical Keyboard (Blue Switch)" data-price="25" data-seller="Chen" data-date="5h ago" data-description="High-quality mechanical keyboard with blue switches for tactile feedback and satisfying sound. RGB lighting with multiple modes. Great for gaming and typing.">
+                <img src="images/5.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Mechanical Keyboard (Blue Switch)</h4>
+                    <p class="text-brand-accent font-black mt-2">$25</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Chen · 5h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Electric Pot" data-image="images/6.png" data-title="Multi-function Dorm Electric Pot" data-price="12" data-seller="Zhou" data-date="1 day ago" data-description="Compact electric pot perfect for dorm living. Multi-function with heating and cooking capabilities. Quick boiling time, easy to clean. Barely used.">
+                <img src="images/6.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Multi-function Dorm Electric Pot</h4>
+                    <p class="text-brand-accent font-black mt-2">$12</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Zhou · 1 day ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Badminton Racket" data-image="images/7.png" data-title="Yonex Badminton Racket (Single)" data-price="30" data-seller="Wu" data-date="Just now" data-description="Professional-grade Yonex badminton racket. Lightweight and durable construction for faster swing speed. Ideal for both recreational and competitive play.">
+                <img src="images/7.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Yonex Badminton Racket (Single)</h4>
+                    <p class="text-brand-accent font-black mt-2">$30</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Wu · Just now</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Fujifilm Instax Camera" data-image="images/8.png" data-title="Fujifilm Instax Mini (Vintage)" data-price="85" data-seller="Han" data-date="2h ago" data-description="Retro-style Fujifilm Instax instant camera. Produces physical photo prints on the spot. Perfect for parties, events, and memory-making. Well-maintained.">
+                <img src="images/8.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Fujifilm Instax Mini (Vintage)</h4>
+                    <p class="text-brand-accent font-black mt-2">$85</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Han · 2h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Noise Cancelling Headphones" data-image="images/9.png" data-title="Noise Cancelling Headphones" data-price="40" data-seller="Zhao" data-date="6h ago" data-description="Premium noise-cancelling headphones with active noise cancellation technology. Comfort fit for long listening sessions. 20+ hours battery life.">
+                <img src="images/9.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Noise Cancelling Headphones</h4>
+                    <p class="text-brand-accent font-black mt-2">$40</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Zhao · 6h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Mini Humidifier" data-image="images/10.png" data-title="Mini Humidifier (Desk Size)" data-price="8" data-seller="Sun" data-date="Yesterday" data-description="Compact desk humidifier for small rooms and workspaces. USB-powered and ultra-quiet operation. Helps maintain healthy air humidity during dry seasons.">
+                <img src="images/10.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Mini Humidifier (Desk Size)</h4>
+                    <p class="text-brand-accent font-black mt-2">$8</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Sun · Yesterday</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Psychology Notes Textbook" data-image="images/11.png" data-title="Psychology 101 Notes & Textbook" data-price="20" data-seller="Kim" data-date="4h ago" data-description="Psychology 101 textbook bundled with comprehensive study notes. Covers all major concepts from the course. Highlights and annotations throughout for easy reference.">
+                <img src="images/11.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Psychology 101 Notes & Textbook</h4>
+                    <p class="text-brand-accent font-black mt-2">$20</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Kim · 4h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Acoustic Guitar" data-image="images/12.png" data-title="Acoustic Guitar (Beginner Friendly)" data-price="110" data-seller="Park" data-date="1 day ago" data-description="Beautiful acoustic guitar perfect for beginners. Full-size wooden construction with warm sound quality. Includes gig bag and spare strings. Great condition.">
+                <img src="images/12.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Acoustic Guitar (Beginner Friendly)</h4>
+                    <p class="text-brand-accent font-black mt-2">$110</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Park · 1 day ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Gaming Monitor" data-image="images/13.png" data-title="24-inch Curved Gaming Monitor" data-price="95" data-seller="Choi" data-date="8h ago" data-description="Premium 24-inch curved gaming monitor with 144Hz refresh rate and 1ms response time. Excellent for gaming and fast-paced applications. Minimal dead pixels.">
+                <img src="images/13.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">24-inch Curved Gaming Monitor</h4>
+                    <p class="text-brand-accent font-black mt-2">$95</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Choi · 8h ago</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="Storage Bins" data-image="images/14.png" data-title="Storage Bins (Set of 3)" data-price="10" data-seller="Jung" data-date="Yesterday" data-description="Set of 3 stackable storage bins for organizing dorm room or apartment. Clear plastic construction with secure lids. Great for clothes, books, or supplies.">
+                <img src="images/14.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">Storage Bins (Set of 3)</h4>
+                    <p class="text-brand-accent font-black mt-2">$10</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Jung · Yesterday</div>
+                </div>
+            </div>
+            <div onclick="showProductDetails(this)" class="market-item cursor-pointer bg-white rounded-xl border border-gray-100 overflow-hidden hover-lift group" data-name="North Face Backpack" data-image="images/15.png" data-title="North Face Laptop Backpack" data-price="55" data-seller="Shin" data-date="Today" data-description="Durable North Face laptop backpack with dedicated compartment for laptops up to 17 inches. Multiple pockets for organization. Comfortable straps for all-day wear.">
+                <img src="images/15.png" class="w-full h-40 object-cover">
+                <div class="p-4">
+                    <h4 class="font-bold text-sm truncate-2-lines group-hover:text-brand-main transition">North Face Laptop Backpack</h4>
+                    <p class="text-brand-accent font-black mt-2">$55</p>
+                    <div class="mt-3 text-[10px] text-gray-400">User: Shin · Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="my-requests-view" class="hidden bg-slate-50 min-h-screen pb-20">
+        <div class="max-w-4xl mx-auto px-4 pt-12">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-200 pb-6">
+                <h1 class="text-3xl font-extrabold text-brand-dark">My Buying Requests</h1>
+                <button onclick="openPostRequestModal()" class="bg-brand-accent text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:bg-orange-600 transition">
+                    + Post New Request
+                </button>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex justify-between items-center hover:border-brand-main transition">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded">ACTIVE</span>
+                            <span class="text-gray-400 text-xs">Posted: 2026-03-15</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">Looking for "Modern Operating Systems"</h3>
+                        <p class="text-sm text-gray-500 mt-1">Good condition preferred, no heavy markings. Budget: $30-50.</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-brand-main font-bold">3 Responses</p>
+                        <button class="text-xs text-gray-400 hover:text-red-500 mt-4 underline">Withdraw Request</button>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm flex justify-between items-center hover:border-brand-main transition">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-2">
+                            <span class="bg-orange-100 text-orange-600 text-[10px] font-bold px-2 py-0.5 rounded">ACTIVE</span>
+                            <span class="text-gray-400 text-xs">Posted: 2026-03-17</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">Looking for Advanced Mathematics 7th Ed</h3>
+                        <p class="text-sm text-gray-500 mt-1">Urgent for upcoming midterm!</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-brand-main font-bold">1 Response</p>
+                        <button class="text-xs text-gray-400 hover:text-red-500 mt-4 underline">Withdraw Request</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><div id="all-requests-view" class="hidden bg-slate-50 min-h-screen pb-20">
+        <div class="max-w-4xl mx-auto px-4 pt-12">
+            <div class="flex justify-between items-center mb-8 border-b border-gray-200 pb-6">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-brand-dark">Community Requests</h1>
+                    <p class="text-gray-500 mt-2">Help out your peers by responding to their needs</p>
+                </div>
+                <button onclick="openPostRequestModal()" class="bg-brand-accent text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg hover:bg-orange-600 transition">
+                    + Post New Request
+                </button>
+            </div>
+            <div id="all-requests-container" class="space-y-4">
+                </div>
+        </div>
+    </div>
+
+    <!-- 商品详情模态框 -->
+    <div id="product-detail-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 transform transition-all relative mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeProductModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <!-- 商品图片 -->
+            <img id="product-image" src="" alt="product" class="w-full h-64 object-cover rounded-2xl mb-6">
+            
+            <!-- 商品信息 -->
+            <div>
+                <h2 id="product-title" class="text-3xl font-black text-gray-900 mb-2">Product Title</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <p id="product-user" class="text-sm text-gray-500"><i class="fa-solid fa-user mr-1"></i>Seller: <span id="seller-name">Username</span></p>
+                    <p id="product-dorm" class="text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        <i class="fa-solid fa-building mr-1"></i><span id="dorm-info">Building 1</span>
+                    </p>
+                </div>
+                
+                <!-- 价格和状态 -->
+                <div class="flex items-center justify-between mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                    <div>
+                        <p class="text-xs text-gray-600 mb-1">Price</p>
+                        <p id="product-price" class="text-3xl font-black text-brand-accent">$0</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-gray-600 mb-1">Listing Date</p>
+                        <p id="product-date" class="text-sm font-bold text-gray-700">Just now</p>
+                    </div>
+                </div>
+
+                <!-- 商品描述 -->
+                <div class="mb-6">
+                    <h3 class="font-bold text-gray-900 mb-2">Description</h3>
+                    <p id="product-description" class="text-gray-700 text-sm leading-relaxed">Product description goes here...</p>
+                </div>
+
+                <!-- 购物车按钮 -->
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="addToCart()" class="bg-brand-main text-white font-bold py-3.5 rounded-xl hover:bg-brand-dark transition shadow-md flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-shopping-cart"></i>
+                        <span>Add to Cart</span>
+                    </button>
+                    <button onclick="closeProductModal()" class="bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-300 transition shadow-md">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 购物车结算模态框 -->
+    <div id="cart-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 transform transition-all relative mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeCartModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <h2 class="text-3xl font-black text-gray-900 mb-6 flex items-center">
+                <i class="fa-solid fa-shopping-cart text-brand-main mr-3"></i>
+                Shopping Cart
+            </h2>
+            
+            <!-- 购物车商品列表 -->
+            <div id="cart-items" class="space-y-4 mb-6 max-h-64 overflow-y-auto">
+                <!-- 动态生成的商品项 -->
+            </div>
+            
+            <!-- 空购物车提示 -->
+            <div id="empty-cart" class="text-center py-8 text-gray-500 hidden">
+                <i class="fa-solid fa-cart-arrow-down text-4xl mb-3 text-gray-300"></i>
+                <p>Your cart is empty</p>
+            </div>
+            
+            <!-- 总价 -->
+            <div class="flex justify-between items-center mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                <span class="text-lg font-bold text-gray-700">Total:</span>
+                <span id="cart-total" class="text-2xl font-black text-brand-accent">$0.00</span>
+            </div>
+            
+            <!-- 付款方式选择 -->
+            <div class="mb-6">
+                <h3 class="font-bold text-gray-900 mb-3">Payment Method</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-brand-main transition payment-option" data-payment="online">
+                        <input type="radio" name="payment-method" value="online" class="w-5 h-5 text-brand-main mr-3" checked>
+                        <div class="flex-1">
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-mobile-screen text-green-500 mr-2"></i>
+                                <span class="font-bold text-gray-800">Online Payment</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">WeChat Pay / Alipay</p>
+                        </div>
+                    </label>
+                    
+                    <label class="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-brand-main transition payment-option" data-payment="offline">
+                        <input type="radio" name="payment-method" value="offline" class="w-5 h-5 text-brand-main mr-3">
+                        <div class="flex-1">
+                            <div class="flex items-center">
+                                <i class="fa-solid fa-handshake text-blue-500 mr-2"></i>
+                                <span class="font-bold text-gray-800">Face-to-Face Transaction</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">Meet seller in person</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- 线下交易商家信息 -->
+            <div id="seller-info-section" class="mb-6 hidden">
+                <h4 class="font-bold text-gray-900 mb-3 flex items-center">
+                    <i class="fa-solid fa-store text-yellow-600 mr-2"></i>
+                    All Sellers Information
+                </h4>
+                <div id="sellers-list" class="space-y-4">
+                    <!-- 商家信息卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 结算按钮 -->
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="checkout()" id="checkout-btn" class="bg-brand-main text-white font-bold py-3.5 rounded-xl hover:bg-brand-dark transition shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-credit-card"></i>
+                    <span>Checkout</span>
+                </button>
+                <button onclick="closeCartModal()" class="bg-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-300 transition shadow-md">
+                    Continue Shopping
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="user-profile-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm p-8 transform transition-all relative text-center mx-4">
+            <button onclick="document.getElementById('user-profile-modal').classList.add('hidden')" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <div id="modal-avatar" class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl font-extrabold shadow-inner"></div>
+            
+            <h3 class="text-2xl font-black text-gray-900 mb-1" id="modal-name">Name</h3>
+            <p class="text-sm text-gray-500 mb-6 bg-gray-100 inline-block px-3 py-1 rounded-full" id="modal-school"><i class="fa-solid fa-location-dot mr-1"></i>School</p>
+            
+            <div class="grid grid-cols-2 gap-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 mb-8">
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Major</p>
+                    <p class="font-bold text-gray-800 text-lg" id="modal-major">Major</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Gender</p>
+                    <p class="font-bold text-gray-800 text-lg" id="modal-gender">Gender</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Grade</p>
+                    <p class="font-bold text-gray-800 text-lg" id="modal-grade">Grade</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Dorm</p>
+                    <p class="font-bold text-blue-600 text-lg" id="modal-dorm">Dorm</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Posted</p>
+                    <p class="font-black text-brand-main text-xl" id="modal-items">0</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Likes Rcvd</p>
+                    <p class="font-black text-brand-accent text-xl" id="modal-likes">0</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="document.getElementById('user-profile-modal').classList.add('hidden')" class="bg-brand-main text-white font-bold py-3.5 rounded-xl hover:bg-brand-dark transition shadow-md">
+                    Close Profile
+                </button>
+                <button onclick="logout()" class="bg-red-500 text-white font-bold py-3.5 rounded-xl hover:bg-red-600 transition shadow-md">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录/注册模态框 -->
+    <div id="auth-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 transform transition-all relative mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+        
+            <!-- 切换登录/注册标签 -->
+            <div class="flex mb-8 border-b border-gray-200">
+                <button id="login-tab" onclick="switchAuthTab('login')" class="flex-1 py-3 font-bold text-brand-accent border-b-2 border-brand-accent">Login</button>
+                <button id="register-tab" onclick="switchAuthTab('register')" class="flex-1 py-3 font-bold text-gray-400">Register</button>
+            </div>
+        
+            <!-- 登录表单 -->
+            <div id="login-form">
+                <div class="mb-4">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" for="login-id">
+                        User ID
+                    </label>
+                    <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="login-id" type="text" placeholder="Enter your unique ID">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-bold text-gray-700 mb-2" for="login-password">
+                        Password
+                    </label>
+                    <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="login-password" type="password" placeholder="Enter your password">
+                </div>
+                <button onclick="handleLogin()" class="w-full bg-brand-main text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-md">
+                    Login
+                </button>
+            </div>
+        
+        <!-- 注册表单 -->
+        <div id="register-form" class="hidden">
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-name">
+                    Full Name
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-name" type="text" placeholder="Enter your full name">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-school">
+                    School
+                </label>
+                <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-school">
+                    <option value="HUBU">Hubei University (HUBU)</option>
+                    <option value="WHU">Wuhan University (WHU)</option>
+                    <option value="HUST">Huazhong Univ. of Sci. & Tech. (HUST)</option>
+                    <option value="WUST">Wuhan Univ. of Sci. & Tech. (WUST)</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-major">
+                    Major
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-major" type="text" placeholder="Enter your major (e.g., Computer Science)">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-gender">
+                    Gender
+                </label>
+                <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-gender">
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-grade">
+                    Grade
+                </label>
+                <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-grade">
+                    <option value="Year 1">Year 1</option>
+                    <option value="Year 2">Year 2</option>
+                    <option value="Year 3">Year 3</option>
+                    <option value="Year 4">Year 4</option>
+                    <option value="Graduate">Graduate</option>
+                    <option value="PhD">PhD</option>
+                </select>
+            </div>
+            <div class="mb-4">
+    <label class="block text-sm font-bold text-gray-700 mb-2" for="register-dorm">
+        Dormitory (Optional)
+    </label>
+    <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent bg-white" id="register-dorm">
+        <option value="" disabled selected>Select your building</option>
+        
+        <optgroup label="Tuanjie Apartments">
+            <option value="Tuanjie Bldg 1">Building 1</option>
+            <option value="Tuanjie Bldg 2">Building 2</option>
+            <option value="Tuanjie Bldg 3">Building 3</option>
+        </optgroup>
+        
+        <optgroup label="Zhongcheng Apartments">
+            <option value="Zhongcheng Bldg 1">Building 1</option>
+            <option value="Zhongcheng Bldg 2">Building 2</option>
+            <option value="Zhongcheng Bldg 3">Building 3</option>
+        </optgroup>
+        
+        <optgroup label="Phase 1 Apartments">
+            <option value="Phase 1 Bldg A">Building A</option>
+            <option value="Phase 1 Bldg B">Building B</option>
+        </optgroup>
+        
+        <optgroup label="Phase 2 Apartments">
+            <option value="Phase 2 Bldg A">Building A</option>
+            <option value="Phase 2 Bldg B">Building B</option>
+            <option value="Phase 2 Bldg C">Building C</option>
+            <option value="Phase 2 Bldg D">Building D</option>
+        </optgroup>
+        
+        <optgroup label="Chengxin Apartments">
+            <option value="Chengxin Bldg A">Building A</option>
+            <option value="Chengxin Bldg B">Building B</option>
+            <option value="Chengxin Bldg C">Building C</option>
+        </optgroup>
+        
+        <optgroup label="Other">
+            <option value="Off-campus">Off-campus Housing</option>
+        </optgroup>
+    </select>
+</div>
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-password">
+                    Password
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-password" type="password" placeholder="Enter your password">
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="register-confirm-password">
+                    Confirm Password
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="register-confirm-password" type="password" placeholder="Confirm your password">
+            </div>
+            <button id="registerBtn" type="button" class="w-full bg-brand-main text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-md">
+                Register
+            </button>
+        </div>
+    </div>
+    </div><script>
+        function showUserProfile(name, initial, school, major, gender, grade, dorm, items, likes) {
+            document.getElementById('modal-name').innerText = name;
+            document.getElementById('modal-avatar').innerText = initial;
+            document.getElementById('modal-school').innerHTML = '<i class="fa-solid fa-location-dot mr-1"></i>' + school;
+            document.getElementById('modal-major').innerText = major;
+            document.getElementById('modal-gender').innerText = gender;
+            document.getElementById('modal-grade').innerText = grade;
+            document.getElementById('modal-dorm').innerText = dorm;
+            document.getElementById('modal-likes').innerText = likes;
+            
+            // 动态计算并显示POSTED数量（物品+请求的总和）
+            const postedCount = calculateUserPostedCount(name);
+            document.getElementById('modal-items').innerText = postedCount;
+            
+            // 动态随机生成头像颜色以区分不同用户
+            const colors = ['bg-purple-100 text-purple-600', 'bg-green-100 text-green-600', 'bg-blue-100 text-blue-600', 'bg-orange-100 text-orange-600'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const avatarEl = document.getElementById('modal-avatar');
+            avatarEl.className = `w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl font-extrabold shadow-inner ${randomColor}`;
+
+            // 显示模态框
+            const modal = document.getElementById('user-profile-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        
+        // 计算用户发布的物品和请求总数
+        function calculateUserPostedCount(userName) {
+            let count = 0;
+            
+            // 查找用户ID
+            const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+            const user = registeredUsers.find(u => u.name === userName);
+            
+            if (user) {
+                // 计算发布的物品数量 (把 userPostedItems 改为真实的 marketItems)
+                const allItems = JSON.parse(localStorage.getItem('marketItems')) || [];
+                const userItems = allItems.filter(item => item.seller === userName);
+                count += userItems.length;
+                
+                // 计算发布的请求数量 (把 userRequests 改为真实的 requests)
+                const allRequests = JSON.parse(localStorage.getItem('requests')) || [];
+                const userRequests = allRequests.filter(req => req.requester === userName);
+                count += userRequests.length;
+            }
+            
+            return count;
+        }
+    </script>
+    
+    <!-- Post物品模态框 -->
+    <div id="post-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 transform transition-all relative mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closePostModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <h2 class="text-2xl font-black text-gray-900 mb-6 text-center">Post Item</h2>
+            
+            <!-- 市场选择 -->
+            <div class="mb-6">
+                <label class="block text-sm font-bold text-gray-700 mb-2">Market</label>
+                <div class="grid grid-cols-2 gap-4">
+                    <button id="module-market-btn" onclick="selectMarket('module')" class="py-3 border-2 border-gray-300 rounded-lg font-bold text-gray-700 hover:border-brand-main hover:text-brand-main transition">
+                        Module Market
+                    </button>
+                    <button id="general-market-btn" onclick="selectMarket('general')" class="py-3 border-2 border-gray-300 rounded-lg font-bold text-gray-700 hover:border-brand-main hover:text-brand-main transition">
+                        General Market
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 课程代码输入 (Module Market时显示) -->
+            <div id="course-code-section" class="mb-4 hidden">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="course-code">
+                    Course Code/Name
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="course-code" type="text" placeholder="Enter course code or name">
+            </div>
+            
+            <!-- 物品信息 -->
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="item-title">
+                    Item Title
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="item-title" type="text" placeholder="Enter item title">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="item-description">
+                    Item Description
+                </label>
+                <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="item-description" rows="3" placeholder="Enter item description"></textarea>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="item-price">
+                    Price
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="item-price" type="number" step="0.01" placeholder="Enter price">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="item-image">
+                    Item Image
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent bg-white" id="item-image" type="file" accept="image/*" onchange="handleItemImageChange(event)">
+                <img id="item-image-preview" src="" alt="Preview" class="hidden mt-3 w-full h-40 object-cover rounded-xl border border-gray-200">
+                <p class="text-xs text-gray-400 mt-2">If no image is selected, a default gray placeholder will be used.</p>
+            </div>
+            
+            <button onclick="postItem()" class="w-full bg-brand-main text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-md mt-6">
+                Post Item
+            </button>
+        </div>
+    </div>
+    
+    <!-- Post Request模态框 -->
+    <div id="post-request-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/60 backdrop-blur-sm">
+        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md p-8 transform transition-all relative mx-4 max-h-[90vh] overflow-y-auto">
+            <button onclick="closePostRequestModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            
+            <h2 class="text-2xl font-black text-gray-900 mb-6 text-center">Post Request</h2>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="request-title">
+                    Request Title
+                </label>
+                <input class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="request-title" type="text" placeholder="Enter request title">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-bold text-gray-700 mb-2" for="request-description">
+                    Request Description
+                </label>
+                <textarea class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-main focus:border-transparent" id="request-description" rows="3" placeholder="Enter request description"></textarea>
+            </div>
+            
+            <button onclick="postRequest()" class="w-full bg-brand-main text-white font-bold py-3 rounded-lg hover:bg-brand-dark transition shadow-md mt-6">
+                Post Request
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
